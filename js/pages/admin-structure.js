@@ -86,6 +86,8 @@ export function pageAdminStructure() {
     });
     const parentEl = h('select', {}, ...parentOptions);
     if (forcedParent) parentEl.value = forcedParent.id;
+    else if (person?.parent_id) parentEl.value = person.parent_id; // 编辑时预填充原上级
+    else if (person?.role === '基地负责人') parentEl.value = ''; // 基地负责人无上级
 
     const baseEl = h('select', {},
       bases.map(b => h('option', { value: b, selected: person?.base_name === b ? '' : undefined }, b)),

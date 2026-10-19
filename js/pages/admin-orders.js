@@ -102,6 +102,7 @@ export function pageAdminOrders() {
     const nameEl = h('select', { id: 'ed-seller', style: { width: '100%', padding: '7px 10px', border: '1px solid var(--line-strong)', borderRadius: '6px' } },
       order ? teachers : [h('option', { value: '' }, '请选择老师'), ...teachers]
     );
+    if (order) nameEl.value = order.seller_name; // 预填充原销售
     const amountEl = h('input', { type: 'number', id: 'ed-amount', placeholder: '金额', value: order?.amount || '' });
     const monthEl = h('input', { type: 'month', id: 'ed-month', value: order?.month || new Date().toISOString().slice(0, 7) });
     const remarkEl = h('textarea', { id: 'ed-remark', placeholder: '备注', rows: 2 }, order?.remark || '');
