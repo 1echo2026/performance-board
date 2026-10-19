@@ -1,15 +1,12 @@
 /** 总览仪表盘 / */
 import { h, $, clear, fmtMoney } from '../ui.js';
 import { dashboardSummary, allMonths } from '../engine.js';
-import { Orders, Archive } from '../store.js';
 import { barChart, donutChart, assignColors } from '../charts.js';
 
-const state = { months: [] };
+const state = { filterMonth: '' };
 
 export function pageOverview() {
-  const app = $('#app');
-  app.innerHTML = '';
-  state.months = allMonths();
+  state.filterMonth = '';
   render();
 }
 
@@ -17,12 +14,9 @@ function render() {
   const app = $('#app');
   clear(app);
 
-  // 筛选
-  const monthOpts = [h('option', { value: '' }, '全部月份')];
-  state.months.forEach(m => monthOpts.push(h('option', { value: m, selected: state.months.length === 1 ? 'selected' : '' }, m)));
-  const selectedMonth = state.months.length === 1 ? state.months[0] : '';
-  if (selectedMonth) state.months = [selectedMonth];
-  const realMonths = state.months.length ? state.months : allMonths();
+  // 月份筛选
+  const months = allMonths();
+  const realMonths = state.filterMonth ? [state.filterMonth] : months;
   const summary = dashboardSummary(realMonths);
 
   app.append(
@@ -31,21 +25,11 @@ function render() {
         h('div', { class: 'page-title' }, '业绩总览仪表盘'),
         h('div', { class: 'page-sub' }, '实时汇总 · 全基地'),
       ),
-      h('div', {},
-        h('select', {
-          onchange: e => {
-            const v = e.target.value;
-            state.months = v ? [v] : allMonths();
-            const m = allMonths();
-            const sel = document.querySelector('[data-filter-month]');
-            m.forEach(o => { if (o.value === v) o.selected = true; else o.selected = false; });
-            render();
-          },
-          id: 'filter-month'
-        },
-          h('option', { value: '' }, '全部月份'),
-          ...allMonths().map(m => h('option', { value: m }, m))
-        )
+      h('select', {
+        onchange: e => { state.filterMonth = e.target.value; render(); }
+      },
+        h('option', { value: '' }, '全部月份'),
+        ...months.map(m => h('option', { value: m, selected: state.filterMonth === m ? '' : undefined }, m))
       )
     ),
     // KPI
@@ -81,8 +65,8 @@ function render() {
     ),
     // 排行
     h('div', { class: 'grid-2', style: { marginTop: '16px' } },
-      rankCard('主管业绩 TOP', summary.managerTop, '主管'),
-      rankCard('组长业绩 TOP', summary.headTop, '组长'),
+      rankCard('主管业绩 TOP', summary.managerTop),
+      rankCard('组长业绩 TOP', summary.headTop),
     )
   );
 }
@@ -95,7 +79,7 @@ function kpiCard(label, value, sub) {
   );
 }
 
-function rankCard(title, rows, roleLabel) {
+function rankCard(title, rows) {
   return h('div', { class: 'card' },
     h('div', { class: 'card-header' }, h('h3', {}, title)),
     h('div', { class: 'card-body', style: { padding: 0 } },

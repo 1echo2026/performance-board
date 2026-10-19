@@ -1,7 +1,7 @@
 /** 后台 - 归档管理 */
 import { h, $, clear, fmtMoney, toast, modal, dangerConfirm, fmtDate } from '../ui.js';
 import { adminLayout } from './admin-layout.js';
-import { Archive, Orders, Logs } from '../store.js';
+import { Archive, Orders, Logs, Auth } from '../store.js';
 
 export function pageAdminArchive() {
   const root = h('div', {});
@@ -111,5 +111,3 @@ export function pageAdminArchive() {
   }
 }
 
-// Auth 引用（顶层需要）
-import { Auth } from '../store.js';

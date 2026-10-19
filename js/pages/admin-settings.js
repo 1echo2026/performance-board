@@ -1,7 +1,8 @@
 /** 后台 - 系统设置 */
 import { h, $, clear, toast, modal, dangerConfirm } from '../ui.js';
 import { adminLayout } from './admin-layout.js';
-import { Logs, Auth, _debug } from '../store.js';
+import { Logs, Auth, _debug, resetState } from '../store.js';
+import { download } from '../ui.js';
 
 export function pageAdminSettings() {
   const root = h('div', {});
@@ -135,6 +136,3 @@ export function pageAdminSettings() {
     toast('已删除', 'success'); drawAdmins();
   }
 }
-
-import { resetState } from '../store.js';
-import { download } from '../ui.js';
