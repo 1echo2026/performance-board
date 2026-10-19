@@ -208,7 +208,7 @@ export function pageAdminOrders() {
             h('label', {}, '选择文件 (.csv)'),
             h('button', { class: 'btn', style: { alignSelf: 'flex-start' }, onclick: () => fileInput.click() }, '📂 选择文件')
           ),
-          h('button', { class: 'btn', style: { alignSelf: 'center' }, onclick: () => download('订单导入模板.csv', '销售姓名,金额,月份,备注\n张三,5000,2026-05,示例订单\n李四,8800,2026-05,追加订单') }, '📄 下载模板')
+          h('button', { class: 'btn', style: { alignSelf: 'center' }, onclick: () => download('订单导入模板.csv', '销售姓名,金额,月份,备注\\n张三,5000,2026-05,示例订单\\n李四,8800,2026-05,追加订单') }, '📄 下载模板')
         ),
         h('div', { id: 'import-preview', style: { marginTop: 12 } })
       ),
