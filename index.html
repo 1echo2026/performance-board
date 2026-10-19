@@ -28,22 +28,6 @@
 <div id="toast-host"></div>
 <div id="modal-host"></div>
 
-<script>
-  // 运行时探针：确认 inline JS 可执行
-  window.__PB_INLINE_LOADED = true;
-  console.log('[PB] inline script loaded, href=', location.href);
-</script>
 <script type="module" src="./js/app.js"></script>
-<script>
-  // 错误捕获
-  window.addEventListener('error', e => {
-    console.error('[PB ERROR]', e.error || e.message);
-    document.body.dataset.pbError = e.message;
-  });
-  window.addEventListener('unhandledrejection', e => {
-    console.error('[PB REJECT]', e.reason);
-    document.body.dataset.pbReject = String(e.reason?.message || e.reason);
-  });
-</script>
 </body>
 </html>
