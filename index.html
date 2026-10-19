@@ -7,8 +7,25 @@
 <title>业绩看板系统</title>
 <link rel="stylesheet" href="./css/app.css" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231e3a8a'/%3E%3Ctext x='50%25' y='58%25' text-anchor='middle' font-size='32' fill='white' font-family='sans-serif' font-weight='bold'%3EB%3C/text%3E%3C/svg%3E" />
+<style>
+  #boot-msg{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg,#f6f8fc);z-index:9999;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+  #boot-msg .spin{width:40px;height:40px;border:3px solid #e5e7eb;border-top-color:#1e3a8a;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+  #boot-msg .txt{color:#374151;font-size:14px}
+  #boot-msg .sub{color:#9ca3af;font-size:12px;margin-top:8px;max-width:360px;text-align:center;line-height:1.7}
+  #boot-msg.err .spin{display:none}
+  #boot-msg.err .box{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:20px 24px;max-width:420px}
+  #boot-msg.err .box b{color:#dc2626;font-size:15px}
+  #boot-msg.err pre{background:#1f2937;color:#e5e7eb;padding:10px;border-radius:6px;font-size:12px;overflow:auto;margin:10px 0;white-space:pre-wrap}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
+<!-- 启动占位 / 错误兜底（防止白屏） -->
+<div id="boot-msg">
+  <div class="spin"></div>
+  <div class="txt">正在加载业绩看板系统…</div>
+</div>
+
 <!-- 顶部导航 -->
 <header class="topbar" id="topbar" hidden>
   <div class="topbar-inner">
@@ -27,6 +44,45 @@
 <!-- Toast / Modal -->
 <div id="toast-host"></div>
 <div id="modal-host"></div>
+
+<!-- 错误兜底脚本：在模块加载失败时显示可读信息，避免白屏 -->
+<script>
+(function(){
+  var boot = document.getElementById('boot-msg');
+  var shown = false;
+  function showErr(title, detail){
+    if(shown) return; shown = true;
+    boot.className = 'err';
+    boot.innerHTML = '<div class="box"><b>'+title+'</b>'
+      +(detail?'<pre>'+String(detail).slice(0,1500)+'</pre>':'')
+      +'<div style="margin-top:10px;font-size:13px;color:#6b7280">请按 F12 打开浏览器控制台查看完整报错，把红色报错截图发给我。</div></div>';
+  }
+  // 全局 JS 错误
+  window.addEventListener('error', function(e){
+    showErr('页面脚本出错', (e.error && e.error.stack) || e.message || e.filename);
+  });
+  window.addEventListener('unhandledrejection', function(e){
+    showErr('异步执行出错', (e.reason && e.reason.stack) || e.reason);
+  });
+  // 超时兜底：5 秒后模块还没执行完，说明加载失败（常见原因：file:// 协议被浏览器阻止加载 ES 模块）
+  setTimeout(function(){
+    var app = document.getElementById('app');
+    if(app && !app.children.length && !shown){
+      var isFile = location.protocol === 'file:';
+      showErr(
+        isFile ? '请通过网址打开，不要双击本地文件' : '页面加载超时',
+        isFile
+          ? '当前以 file:// 协议打开，浏览器会阻止加载 JS 模块。\n\n解决方法：\n1）访问线上地址 https://1echo2026.github.io/performance-board/\n2）或用本地 HTTP 服务打开（如 VS Code Live Server、python -m http.server）'
+          : '可能是网络或脚本加载失败，请刷新重试，或把控制台报错截图发给我。'
+      );
+    }
+  }, 5000);
+  // 暴露给 app.js，模块加载完成后调用
+  window.__PB_BOOT_OK = function(){
+    if(boot && boot.parentNode) boot.parentNode.removeChild(boot);
+  };
+})();
+</script>
 
 <script type="module" src="./js/app.js"></script>
 </body>

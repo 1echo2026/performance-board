@@ -47,3 +47,8 @@ register('/admin/settings', render(pageAdminSettings, { needAdmin: true }));
 register('/admin', () => navigate('/admin/orders'));
 
 boot();
+
+// 模块全部加载完成：移除启动占位
+if (typeof window !== 'undefined' && window.__PB_BOOT_OK) {
+  try { window.__PB_BOOT_OK(); } catch (_) {}
+}

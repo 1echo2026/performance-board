@@ -42,7 +42,7 @@ export function seedDefaultState() {
       const mgr = add(base + n, '主管', leader, base);
       ['组长一', '组长二'].forEach((g, j) => {
         const h = add(`${base}${n.substring(2)}${g}`, '组长', mgr, base);
-        for (let t = 1; t <= 3; t++) add(`${base.substring(0,1)}${String.fromCharCode(65+i*4+j*3+t-1)}老师`, '老师', h, base);
+        for (let t = 1; t <= 3; t++) add(`${base.slice(-1)}${String.fromCharCode(65+i*4+j*3+t-1)}老师`, '老师', h, base);
       });
     });
   });
